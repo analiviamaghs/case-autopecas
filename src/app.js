@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-
+import pecasRoutes from './routes/pecasRoutes.js';
+import router from './routes/pecasRoutes.js';
 const app = express();
 
 // Middlewares globais
@@ -14,5 +15,7 @@ app.get('/', (req, res) => {
         status: 'online'
     });
 });
+
+app.use('/', router);
 
 export default app;
