@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import pecasRoutes from './routes/pecasRoutes.js';
-import router from './routes/pecasRoutes.js';
+import painelRoutes from './routes/painelRoutes.js';
 const app = express();
 
 // Middlewares globais
@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use('/', router);
+app.use('/', pecasRoutes);
+app.use('/', painelRoutes);
 
 export default app;
