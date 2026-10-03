@@ -61,18 +61,39 @@ export const updatePeca = async (req, res) => {
             });
         }
 
-        const pecaDataAtualizada = { ...req.body };
+        const {
+            nome_peca,
+            categoria,
+            custo_unitario,
+            fornecedor,
+            estoque_atual
+        } = req.body;
 
-        if (pecaDataAtualizada.id) {
-            pecaDataAtualizada.sku = pecaDataAtualizada.id;
-            delete pecaDataAtualizada.id; // Removemos a chave "id" para o Supabase não tentar buscar uma coluna inexistente
-        }
+        const pecaDataAtualizada = {
+            nome_peca,
+            categoria,
+            custo_unitario,
+            fornecedor,
+            estoque_atual
+        };
 
-        const pecaAtualizada = await pecasService.updatePeca(id, pecaDataAtualizada);
-        return res.status(200).json({ sucesso: true, dados: pecaAtualizada });
+        const pecaAtualizada = await pecasService.updatePeca(
+            id,
+            pecaDataAtualizada
+        );
+
+        return res.status(200).json({
+            sucesso: true,
+            dados: pecaAtualizada
+        });
+
     } catch (error) {
         const status = error.statusCode || 500;
-        return res.status(status).json({ sucesso: false, mensagem: error.message });
+
+        return res.status(status).json({
+            sucesso: false,
+            mensagem: error.message
+        });
     }
 };
 

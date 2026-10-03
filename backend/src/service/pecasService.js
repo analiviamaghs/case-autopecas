@@ -36,7 +36,7 @@ export const getPecaBySku = async (sku) => {
     const { data, error } = await supabase
         .from("pecas")
         .select("*")
-        .eq("sku", sku)
+        .eq("sku", sku.toUpperCase())
         .single();
 
     if (error) {
