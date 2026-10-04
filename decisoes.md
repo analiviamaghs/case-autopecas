@@ -15,14 +15,14 @@ A tabela `itens_venda` estabelece a relação entre as peças e as vendas. Cada 
 Antes da importação, analisei os arquivos fornecidos e identifiquei diferentes inconsistências nos dados:
 
 - descontos armazenados tanto como valores numéricos quanto acompanhados do caractere `%`;
-- valores monetários utilizando vírgula ou ponto como separador decimal;
+- valores monetários utilizando vírgula ou ponto como separador decimal, pontos separando o número em partes não decimais e alguns com '$  ';
 - datas armazenadas em formatos diferentes, como `DD-MM-AAAA` e `AAAA-MM-DD`, além do uso de `-` ou `/` como separador;
 - categorias apresentando variações de escrita, incluindo diferenças de acentuação e utilização de singular ou plural;
 - campos textuais, como status e SKU, apresentando diferentes combinações de letras maiúsculas e minúsculas.
 
 Para evitar que essas diferenças gerassem registros inconsistentes e prejudicassem as consultas, foram elaboradas funções responsáveis pela limpeza e padronização dos dados durante a importação.
 
-Para valores monetários, as vírgulas são substituídas por pontos e os valores textuais são convertidos para `float`.
+Para valores monetários, as vírgulas são substituídas por pontos ou por espaço em branco, a depender do lugar, e os valores textuais são convertidos para `float`. O '$' é removido.
 
 Para os descontos, além da conversão do separador decimal, o caractere `%` é removido. Quando o campo não está preenchido, o desconto é considerado como zero.
 
