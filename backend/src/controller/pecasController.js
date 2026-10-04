@@ -11,9 +11,10 @@ export const addPeca = async (req, res) => {
                 mensagem: "Campos obrigatórios ausentes."
             });
         }
+        const sku = id.trim().toUpperCase();
 
         const pecaData = {
-            sku: id,
+            sku,
             nome_peca,
             custo_unitario,
             categoria,
