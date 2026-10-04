@@ -587,7 +587,22 @@ function PartModal({ part, onClose, onSave }) {
           </label>
           <label className="text-xs font-semibold text-slate-600">
             Categoria
-            <input required name="categoria" defaultValue={part?.categoria ?? "Motor"} className={fieldClass} placeholder="Ex.: Freios, Motor, Suspensão" />
+            <select
+              required
+              name="categoria"
+              defaultValue={part?.categoria ?? ""}
+              className={fieldClass}
+            >
+              <option value="" disabled>
+                Selecione uma categoria
+              </option>
+
+              {categorias.map((categoria) => (
+                <option key={categoria} value={categoria}>
+                  {categoria}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="text-xs font-semibold text-slate-600">
             Quantidade em estoque
