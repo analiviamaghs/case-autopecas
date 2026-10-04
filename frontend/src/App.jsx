@@ -56,6 +56,51 @@ function Dashboard() {
 
   const topCategory = data.top_categorias[0] || { categoria: "N/A", faturamento_total: 0 };
   const maxCategoryValue = Math.max(...data.top_categorias.map((c) => Number(c.faturamento_total) || 1), 1);
+  const faturamentoMensal = data.faturamento_mensal || [];
+
+  const pontosGrafico = faturamentoMensal.map((item, index) => {
+    const valor = Number(item.faturamento_total) || 0;
+
+    return {
+      valor,
+      mes: new Intl.DateTimeFormat("pt-BR", {
+        month: "short",
+      })
+        .format(new Date(`${item.mes}T12:00:00`))
+        .replace(".", ""),
+      index,
+    };
+  });
+
+  const maiorFaturamento = Math.max(
+    ...pontosGrafico.map((item) => item.valor),
+    1
+  );
+
+  const larguraGrafico = 645;
+  const alturaGrafico = 195;
+  const inicioX = 45;
+  const fimX = 690;
+  const topoY = 25;
+  const baseY = 220;
+
+  const pontos = pontosGrafico.map((item, index) => {
+    const x =
+      pontosGrafico.length === 1
+        ? (inicioX + fimX) / 2
+        : inicioX +
+        (index * (fimX - inicioX)) / (pontosGrafico.length - 1);
+
+    const y =
+      baseY -
+      (item.valor / maiorFaturamento) * (baseY - topoY);
+
+    return {
+      ...item,
+      x,
+      y,
+    };
+  });
 
   return (
     <section className="space-y-6">
@@ -79,9 +124,128 @@ function Dashboard() {
             <p className="mt-2 text-xs text-slate-500"><span className="font-semibold text-emerald-600">Calculado</span> com base nas vendas concluídas</p>
           </div>
           <div>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="font-semibold text-slate-900">Evolução do faturamento</p>
+                <p className="mt-1 text-xs text-slate-500">Valor líquido mensal consolidado</p>
+              </div>
+            </div>
+            <div className="mt-5 h-56">
+              {pontos.length > 0 ? (
+                <svg
+                  viewBox="0 0 700 250"
+                  className="h-full w-full overflow-visible"
+                  preserveAspectRatio="none"
+                >
+                  {[25, 85, 145, 205].map((y) => (
+                    <line
+                      key={y}
+                      x1="45"
+                      y1={y}
+                      x2="690"
+                      y2={y}
+                      stroke="#e2e8f0"
+                      strokeDasharray="4 5"
+                    />
+                  ))}
+
+                  <defs>
+                    <linearGradient
+                      id="areaFaturamento"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="#2563eb"
+                        stopOpacity=".22"
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="#2563eb"
+                        stopOpacity="0"
+                      />
+                    </linearGradient>
+                  </defs>
+
+                  {pontos.length > 1 && (
+                    <>
+                      <path
+                        d={`
+              M ${pontos[0].x} ${pontos[0].y}
+              ${pontos
+                            .slice(1)
+                            .map((p) => `L ${p.x} ${p.y}`)
+                            .join(" ")}
+              L ${pontos[pontos.length - 1].x} ${baseY}
+              L ${pontos[0].x} ${baseY}
+              Z
+            `}
+                        fill="url(#areaFaturamento)"
+                      />
+
+                      <path
+                        d={`
+              M ${pontos[0].x} ${pontos[0].y}
+              ${pontos
+                            .slice(1)
+                            .map((p) => `L ${p.x} ${p.y}`)
+                            .join(" ")}
+            `}
+                        fill="none"
+                        stroke="#2563eb"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </>
+                  )}
+
+                  {pontos.map((ponto) => (
+                    <g key={ponto.mes}>
+                      <circle
+                        cx={ponto.x}
+                        cy={ponto.y}
+                        r="4"
+                        fill="white"
+                        stroke="#2563eb"
+                        strokeWidth="3"
+                      >
+                        <title>
+                          {`${ponto.mes}: ${money.format(ponto.valor)}`}
+                        </title>
+                      </circle>
+
+                      <text
+                        x={ponto.x}
+                        y="245"
+                        textAnchor={
+                          ponto.index === 0
+                            ? "start"
+                            : ponto.index === pontos.length - 1
+                              ? "end"
+                              : "middle"
+                        }
+                        fill="#64748b"
+                        fontSize="12"
+                      >
+                        {ponto.mes}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                  Não há dados mensais disponíveis.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
 
       {/* Resposta 2: Categorias */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
@@ -386,6 +550,15 @@ function PartModal({ part, onClose, onSave }) {
   }
 
   const fieldClass = "mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+
+  const categorias = [
+    "ELÉTRICA",
+    "SUSPENSÃO",
+    "MOTOR",
+    "FILTROS",
+    "FREIOS",
+    "FRENAGEM"
+  ];
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>

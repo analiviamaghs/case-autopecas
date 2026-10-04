@@ -20,12 +20,17 @@ export const getMetricas = async () => {
 
     const itensParados = estoqueParadoData || [];
 
+    const { data: faturamentoMensalData, error: errFaturamentoMensal } = await supabase
+        .rpc('obter_faturamento_mensal');
+
     return {
         faturamento_total: faturamentoData || 0,
         top_categorias: categoriasData || [],
         estoque_parado: {
             total_pecas_sem_venda: itensParados.length, // Total de peças distintas sem venda
             itens: itensParados
-        }
+        },
+        faturamento_mensal: faturamentoMensalData
     };
+
 };
