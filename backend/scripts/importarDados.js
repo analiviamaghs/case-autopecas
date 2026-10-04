@@ -12,10 +12,35 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 // 1. Tratamento de Números/Preços (Converte "532,46" ou "804.65" para Float)
 function sanitizarNumero(valor) {
-    if (!valor) return 0;
-    const limpo = String(valor).replace(',', '.').trim();
-    const num = parseFloat(limpo);
-    return isNaN(num) ? 0 : num;
+    if (valor == null || String(valor).trim() === '') {
+        return 0;
+    }
+
+    let texto = String(valor)
+        .replace(/R\$/gi, '')
+        .replace(/\s/g, '')
+        .trim();
+
+    const ultimaVirgula = texto.lastIndexOf(',');
+    const ultimoPonto = texto.lastIndexOf('.');
+
+    if (ultimaVirgula !== -1 && ultimoPonto !== -1) {
+        if (ultimaVirgula > ultimoPonto) {
+            texto = texto.replace(/\./g, '').replace(',', '.');
+        } else {
+            texto = texto.replace(/,/g, '');
+        }
+    } else if (ultimaVirgula !== -1) {
+        texto = texto.replace(',', '.');
+    }
+
+    const numero = Number(texto);
+
+    if (!Number.isFinite(numero)) {
+        throw new Error(`Preço inválido: "${valor}"`);
+    }
+
+    return numero;
 }
 
 // 2. Tratamento de Desconto (Trata "10%", "10", null, "")
@@ -116,6 +141,7 @@ async function importar() {
     // --- B. IMPORTANDO VENDAS E ITENS ---
     const vendasMap = new Map();
     const itensVendaUnicosMap = new Map();
+    const assinaturasItens = new Set();
 
     await new Promise((resolve) => {
         fs.createReadStream('dados/vendas.csv')
