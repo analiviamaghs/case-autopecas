@@ -7,19 +7,19 @@ Andrade e realizar o gerenciamento do cadastro de peças.
 
 ## Respostas do case
 ### 1. Faturamento Líquido Total
-**R$ 704.334,98**
+**R$ 886.092,01**
 
 ---
 
 ### 2. Categorias de Peça que Mais Faturaram
 A categoria que mais faturou foi **ELÉTRICA**.
 
-1. **ELÉTRICA:** R$ 177.138,01
-2. **SUSPENSÃO:** R$ 171.496,41
-3. **MOTOR:** R$ 112.341,39
-4. **FILTROS:** R$ 104.132,32
-5. **FREIOS:** R$ 98.016,60
-6. **FRENAGEM:** R$ 41.210,25
+1. **ELÉTRICA:** R$ 225.367,56
+2. **SUSPENSÃO:** R$ 197.304,0
+3. **MOTOR:** R$ 157.539,45
+4. **FILTROS:** R$ 138.593,33
+5. **FREIOS:** R$ 122.880,41
+6. **FRENAGEM:** R$ 44.407,25
 
 ---
 
